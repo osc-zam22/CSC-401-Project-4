@@ -28,7 +28,11 @@ class Node {
     }
 }
 
-public class App {
+public class Main {
+
+    static final int fixed_length = 3;
+    static int average_bits;
+    static int total_bits;
 
     // Function that reads the text and count the frequency of every character
     public static Set<Map.Entry<Character, Integer>> getCharactersFrequency(String text) {
@@ -95,9 +99,9 @@ public class App {
 
     public static void main(String[] args) {
 
-        System.out.println("Input text: ");
         Scanner sc = new Scanner(System.in);
 
+        System.out.println("Please enter an English text: ");
         String text = sc.nextLine();
 
         Set<Map.Entry<Character, Integer>> freq = getCharactersFrequency(text);
@@ -151,6 +155,29 @@ public class App {
 
         huffmanCodes(root, "", codes);
 
+        System.out.println();
+
+        // Solving for the compression ratio
+        double avgBitsPerSymbol = 0;
+        int largerSize = 0;
+
+        for(var entry : freq){
+            int size = (codes.getOrDefault(entry.getKey(), "0")).length();
+
+            if (size >= largerSize)
+                largerSize = size;
+
+            avgBitsPerSymbol += ((double) entry.getValue() / totalCharacters) * size;
+        }
+
+        double compressionRatio = ((largerSize - avgBitsPerSymbol) /largerSize) * 100.0;
+
+        // Printing average bits, fixed length, compression ration
+        System.out.println("Averages bits per character: " + String.format("%.2f", avgBitsPerSymbol) + "%");
+        System.out.println("Fixed-length encoding: " + String.format("%d", largerSize));
+        System.out.println("Compression ratio: " + String.format("%.2f", compressionRatio) + "%");
+
+        // Printing encoded and decoded texts
         var encodedText = encodeText(codes, text);
         System.out.println("\nEncoded: " + encodedText);
 
